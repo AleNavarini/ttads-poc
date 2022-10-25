@@ -1,5 +1,6 @@
 
 import { useState } from "react"
+import Header from "../components/Header"
 import PokemonCard from "../components/PokemonCard"
 
 interface Props {
@@ -12,7 +13,7 @@ const DexPage = ({ initialPokemons }: Props) => {
     const imageUrl = process.env.NEXT_APP_IMAGE_URL || ""
     return (
         <>
-            <h1>Dex Page</h1>
+            <Header text='Dex' />
             <div className="pokemon-container">
                 {pokemons.map((pokemon: any, index: number) => {
                     const id: number = getIdFromUrl(pokemon.url)
