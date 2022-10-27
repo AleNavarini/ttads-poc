@@ -11,10 +11,11 @@ interface Props {
     id: number
     image: string
     name: string
-    checked: boolean
+    checked: boolean,
+    onChange: () => void,
 }
 
-const PokemonCard = ({ id, image, name, checked }: Props) => {
+const PokemonCard = ({ id, image, name, checked, onChange }: Props) => {
 
     const { getItem, setItem } = useStorage();
 
@@ -52,6 +53,8 @@ const PokemonCard = ({ id, image, name, checked }: Props) => {
                         }
 
                         setItem("checkedPokemons", JSON.stringify(checkedPokemons))
+
+                        if(onChange) onChange();
                     }}
                 />
             </CardActions>
