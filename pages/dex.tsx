@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react"
-import Header from "../components/Header"
+import Layout from "../components/Layout"
 import PokemonCard from "../components/PokemonCard"
 import axios from 'axios';
 import Box from '@mui/material/Box';
@@ -12,6 +12,8 @@ import { BiSearch } from 'react-icons/bi';
 import InputAdornment from "@mui/material/InputAdornment";
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { styled } from '@mui/material/styles';
+import Router from 'next/router';
+import Button from '@mui/material/Button'
 
 interface Props {
     initialPokemons: any[]
@@ -21,16 +23,16 @@ const DexPage = ({ initialPokemons }: Props) => {
     const [pokemons, setPokemons] = useState(initialPokemons);
     const [search, setSearch] = useState("");
     const imageUrl: string = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
-    const { getItem } = useStorage();
+    const { getItem, removeItem } = useStorage();
 
 
     const getIdFromUrl = (url: string) => {
         const id = url.split('/').reverse()[1]
         return parseInt(id)
     }
-    
+
     const getObtainedPokemonsAmount = () => Object.keys(JSON.parse(getItem("checkedPokemons") || "{}")).length;
-    const [progress,setProgress] = useState((getObtainedPokemonsAmount() / parseInt(process.env.NEXT_PUBLIC_POKEMONS_AMOUNT || '')) * 100);
+    const [progress, setProgress] = useState((getObtainedPokemonsAmount() / parseInt(process.env.NEXT_PUBLIC_POKEMONS_AMOUNT || '')) * 100);
 
     useEffect(() => {
         const filteredPokemons = [...initialPokemons].filter(pokemon => pokemon.name.includes(search));
@@ -38,25 +40,27 @@ const DexPage = ({ initialPokemons }: Props) => {
     }, [search]);
 
     const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-        height: 10,
-        borderRadius: 5,
+        height: 15,
+        borderRadius: 8,
         [`&.${linearProgressClasses.colorPrimary}`]: {
             backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
         },
         [`& .${linearProgressClasses.bar}`]: {
-            borderRadius: 5,
-            backgroundColor: "#FAF423",
+            borderRadius: 8,
+            backgroundColor: "#547AF0",
         },
     }));
 
     return (
-        <>
-            <Header text='Dex' />
+        <Layout headerText="Dex">
             <Box>
-                <Box sx={{margin:" 1em 0", padding:"0 1em"}}>
-                <BorderLinearProgress variant="determinate" value={progress} />
+                <Box sx={{ margin: " 1em 0", padding: "0 1em" }}>
+                    <BorderLinearProgress variant="determinate" value={progress} />
                 </Box>
-                <Filters search={search} setSearch={setSearch} />
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems:"center" ,margin: "0.7em 1.8em" }}>
+                    <Button onClick={() => {removeItem("checkedPokemons"), Router.reload()}} sx={{color:"ffffff", height:"50px", padding: "0 1em"}} size="small" variant="contained">Limpiar</Button>
+                    <Filters search={search} setSearch={setSearch} />
+                </Box>
                 <Box sx={{
                     display: "flex",
                     flexWrap: "wrap",
@@ -90,7 +94,7 @@ const DexPage = ({ initialPokemons }: Props) => {
                 </Box>
             </Box>
 
-        </>
+        </Layout>
     )
 }
 
@@ -117,27 +121,30 @@ const Filters = ({ search, setSearch }: FiltersProps) => {
 
 
     return (
-        <Box sx={{ display: "flex", justifyContent: "flex-end", margin: "0.7em 1.8em 0.7em 0" }}>
 
-            <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-                <InputLabel htmlFor="outlined-adornment-password">Buscar Pokémon</InputLabel>
-                <OutlinedInput
-                    value={search}
-                    sx={{
-                        color: "#ffffff",
 
-                    }}
-                    onChange={(e) => setSearch(e.target.value)}
-                    endAdornment={
-                        <InputAdornment position="end">
-                            <BiSearch color="#ffffff" />
-                        </InputAdornment>
+        <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+            <InputLabel sx={{
+                color: "#ffffff !important"
+            }} htmlFor="outlined-adornment-password">Buscar Pokémon</InputLabel>
+            <OutlinedInput
+                value={search}
+                sx={{
+                    color: "#ffffff",
+                    ".MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#ffffff !important"
                     }
-                    label="Password"
-                />
-            </FormControl>
 
-        </Box>
+                }}
+                onChange={(e) => setSearch(e.target.value)}
+                endAdornment={
+                    <InputAdornment position="end">
+                        <BiSearch color="#ffffff" />
+                    </InputAdornment>
+                }
+                label="Password"
+            />
+        </FormControl>
     )
 }
 
